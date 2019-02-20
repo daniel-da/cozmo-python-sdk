@@ -2283,6 +2283,37 @@ class Robot(event.Dispatcher):
         '''Waits until all SDK-initiated actions are complete.'''
         await self._action_dispatcher.wait_for_all_actions_completed()
 
+    @property
+    def knows_charger_location(self):
+        return (
+                self.world.charger
+                and self.world.charger.pose.is_comparable(self.pose)
+        )
+
+    def return_to_charger(self, final_distance = None, look_timeout=30):
+        if self.is_on_charger:
+            return
+        charger = None
+        if not final_distance:
+            final_distance = util.distance_mm(50)
+        if self.knows_charger_location:
+            charger = self.world.charger
+            pass
+        else:
+            look_around = self.start_behavior(
+                behavior.BehaviorTypes.LookAroundInPlace)
+            try:
+                charger = self.world.wait_for_observed_charger(
+                    timeout=look_timeout)
+            except asyncio.TimeoutError:
+                pass
+            finally:
+                look_around.stop()
+
+        if charger:
+            goto_action = self.go_to_object(charger, final_distance)
+            goto_action.wait_for_completed()
+
 
 _UnexpectedMovementSide = collections.namedtuple('_UnexpectedMovementSide', ['name', 'id'])
 
