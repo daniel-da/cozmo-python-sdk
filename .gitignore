@@ -13,3 +13,4 @@ htmlcov
 /tests/lint/logs
 # pycharm 
 .idea
+.venv

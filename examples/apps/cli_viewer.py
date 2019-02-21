@@ -49,4 +49,4 @@ def cozmo_program(robot: cozmo.robot.Robot):
     ipyshell(usage)
     cozmo.logger.setLevel(default_log_level)
 
-cozmo.run_program(cozmo_program, use_3d_viewer=True, use_viewer=True)
+cozmo.run_program(cozmo_program, use_3d_viewer=False, use_viewer=True)

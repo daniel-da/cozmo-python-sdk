@@ -20,7 +20,6 @@ This is an example of integrating Cozmo with an ipython-based command line inter
 '''
 
 import sys
-sys.path.insert(0, "/home/adolfo/dev/cozmo/cozmo-python-sdk/src")
 
 try:
     from IPython.terminal.embed import InteractiveShellEmbed
@@ -42,11 +41,11 @@ usage = ('This is an IPython interactive shell for Cozmo.\n'
 ipyshell = InteractiveShellEmbed(banner1='\nWelcome to the Cozmo Shell',
                                  exit_msg='Goodbye\n')
 
-def cozmo_program(robot: cozmo.robot.Robot):
+def explore_cli(robot: cozmo.robot.Robot):
     '''Invoke the ipython shell while connected to cozmo'''
     default_log_level = cozmo.logger.level
     cozmo.logger.setLevel('WARN')
     ipyshell(usage)
     cozmo.logger.setLevel(default_log_level)
 
-cozmo.run_program(cozmo_program, use_3d_viewer=True, use_viewer=True)
+cozmo.run_program(explore_cli, use_3d_viewer=True, use_viewer=True)
