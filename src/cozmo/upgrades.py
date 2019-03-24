@@ -32,24 +32,26 @@ class RobotUpgrades(object):
     objects_found = []
 
     def obtain_coordinates_from_walls(self):
-        '''Should reset the robot pose coordinates based on he location of known walls.
-        returns new pose and certainity as a perentage'''
+        """Should reset the robot pose coordinates based on he location of known walls.
+        returns new pose and certainity as a perentage"""
 
-        return util.Pose()
+        # return util.Pose(x=0.0, y=0.0, z=0.0)
+        pass
 
     def scout_world(self):
-        '''Robot searches world for  markers, like walls,
-        charger, objects, etc... '''
+        """Robot searches world for  markers, like walls,
+        charger, objects, etc... """
         pass
 
     def look(self, seconds):
-        '''Robot "looks" for seconds
+        """Robot "looks" for seconds
 
-        :param seconds: the number of seconds robot "looks" '''
+        :param seconds: the number of seconds robot "looks" """
 
-        #still not very well defined what "look" means
-        #but it will probably have to do with some sort of recognigion
-        time.sleep(seconds)
+        # still not very well defined what "look" means
+        # but it will probably have to do with some sort of recognigion
+        # time.sleep(seconds)
+        pass
 
     def look_around(self, total_angle, step_angle, look_time):
         """Robot looks total angle, stoping to look every step_angle
@@ -58,7 +60,7 @@ class RobotUpgrades(object):
 
         :param total_angle: total angle to tun
         :param step_angle: degrees to take every step
-        :parm look_time: seconds to look at each step """
+        :param look_time: seconds to look at each step """
 
         look_angle = util.Angle(0)
 
@@ -148,14 +150,15 @@ class RobotUpgrades(object):
             goto_action.wait_for_completed()
 
     def find_charger(self):
-        '''Find the charger by looking around. '''
+        """Find the charger by looking around. """
         pass
 
+    @staticmethod
     def translate_pose_perpendicular(
-            self, original_pose, d=distance_mm(100)):
-        '''returns a pose translated by the given
+            original_pose, d=distance_mm(100)):
+        """returns a pose translated by the given
 
-        distance perpendicular to the given pose '''
+        distance perpendicular to the given pose """
         return original_pose - d
 
     def dock_with_charger(self):
