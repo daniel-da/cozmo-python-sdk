@@ -76,24 +76,36 @@ class RobotUpgrades(object):
                     )
 
     def drive_forward(self, distance=default_distance, speed=default_speed):
-        self.drive_straight(distance_mm(distance),
-                            speed_mmps(speed)).wait_for_completed()
+        loop = asyncio.get_event_loop()
+        loop.run_until_complete(
+            self.drive_straight(distance_mm(distance),
+                                speed_mmps(speed))
+        )
 
     def drive_backards(self, distance=default_distance, speed=default_speed):
-        self.drive_straight(distance_mm(distance * -1),
-                            speed_mmps(speed)).wait_for_completed()
+        loop = asyncio.get_event_loop()
+        loop.run_until_complete(
+            self.drive_straight(distance_mm(distance * -1),
+                                speed_mmps(speed))
+        )
 
     def turn_left(self, d=90):
-        self.turn_in_place(degrees(d)).wait_for_completed()
-    def turn_left(self, d = 90):
         loop = asyncio.get_event_loop()
-        action = self.turn_in_place(degrees(d)).wait_for_completed()
+        loop.run_until_complete(
+            self.turn_in_place(degrees(d))
+        )
 
     def turn_right(self, d=90):
-        self.turn_in_place(degrees(-1 * d)).wait_for_completed()
+        loop = asyncio.get_event_loop()
+        loop.run_until_complete(
+            self.turn_in_place(degrees(-1 * d))
+        )
 
     def turn_around(self):
-        self.turn_in_place(degrees(180)).wait_for_completed()
+        loop = asyncio.get_event_loop()
+        loop.run_until_complete(
+            self.turn_in_place(degrees(180))
+        )
 
     @property
     def knows_charger_location(self):
@@ -175,7 +187,7 @@ class RobotUpgrades(object):
                 CustomObjectTypes.CustomType01,
                 CustomObjectMarkers.Circles2,
                 710, 50, 50, 50,
-                True).run_until_complete()
+                True)
         )
 
         self.walls['north'] = loop.run_until_complete(
@@ -192,6 +204,7 @@ class RobotUpgrades(object):
                 CustomObjectMarkers.Hexagons2,
                 1330, 50, 50, 50, True)
         )
+
         self.walls['south'] = loop.run_until_complete(
             self.world.define_custom_wall(
                 CustomObjectTypes.CustomType04,
@@ -207,16 +220,11 @@ class RobotUpgrades(object):
     def record_objects(self: robot.Robot):
         for o in self.world.visible_objects:
             self.objects_found[o.object_id] = o
-    def show_visible_objects(self: robot.Robot):
 
+    def show_visible_objects(self: robot.Robot):
         for o in self.world.visible_objects:
             print(o)
-
 
     def enter_world(self, d, s):
         self.drive_off_charger_contacts().wait_for_completed()
         self.drive_straight(distance_mm(d), speed_mmps(s)).wait_for_completed()
-
-
-
-
