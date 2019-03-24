@@ -19,7 +19,7 @@ from cozmo import robot
 
 from cozmo import behavior
 from . import util
-from .util import Pose, degrees, distance_mm, speed_mmps
+from .util import Pose, degrees, distance_mm, speed_mmps, Quaternion
 
 from cozmo.objects import CustomObject, CustomObjectMarkers, CustomObjectTypes
 
@@ -224,7 +224,7 @@ class RobotUpgrades(object):
         for o in self.world.visible_objects:
             self.objects_found[o.object_id] = o
 
-    def show_visible_objects(self: robot.Robot):
+    def show_visible_objects(self):
         for o in self.world.visible_objects:
             print(o)
 
