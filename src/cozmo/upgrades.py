@@ -77,7 +77,7 @@ class RobotUpgrades(object):
 
     def drive_forward(self, distance=default_distance, speed=default_speed):
         self.drive_straight(distance_mm(distance),
-                            speed_mmps(speed))
+                            speed_mmps(speed)).wait_for_completed()
 
     def drive_backards(self, distance=default_distance, speed=default_speed):
         self.drive_straight(distance_mm(distance * -1),
@@ -186,6 +186,12 @@ class RobotUpgrades(object):
                 True)
         )
 
+        self.walls['south'] = loop.run_until_complete(
+            self.world.define_custom_wall(
+                CustomObjectTypes.CustomType04,
+                CustomObjectMarkers.Hexagons2,
+                1330, 50, 50, 50, True)
+        )
         self.walls['south'] = loop.run_until_complete(
             self.world.define_custom_wall(
                 CustomObjectTypes.CustomType04,
