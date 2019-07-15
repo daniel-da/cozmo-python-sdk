@@ -72,7 +72,7 @@ from . import world
 from . import robot_alignment
 
 from ._clad import _clad_to_engine_iface, _clad_to_engine_cozmo, _clad_to_engine_anki, _clad_to_game_cozmo, CladEnumWrapper
-
+from .upgrades import RobotUpgrades
 #### Events
 
 class EvtRobotReady(event.Event):
@@ -2282,6 +2282,7 @@ class Robot(event.Dispatcher):
     async def wait_for_all_actions_completed(self):
         '''Waits until all SDK-initiated actions are complete.'''
         await self._action_dispatcher.wait_for_all_actions_completed()
+
 
 
 _UnexpectedMovementSide = collections.namedtuple('_UnexpectedMovementSide', ['name', 'id'])

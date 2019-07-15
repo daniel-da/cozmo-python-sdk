@@ -220,7 +220,7 @@ class RobotUpgrades(object):
         self.abort_all_actions()
 
     @staticmethod
-    def record_objects(self: robot.Robot):
+    def record_objects(self):
         for o in self.world.visible_objects:
             self.objects_found[o.object_id] = o
 
