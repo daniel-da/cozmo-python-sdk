@@ -627,7 +627,7 @@ class PerformOffChargerContext(event.Dispatcher):
         return False
 
 
-class Robot(event.Dispatcher):
+class Robot(RobotUpgrades, event.Dispatcher):
     """The interface to a Cozmo robot.
 
     A robot has access to:
