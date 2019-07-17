@@ -84,7 +84,7 @@ class RobotUpgrades(object):
         await self.drive_straight(distance_mm(distance * -1), speed_mmps(speed)).wait_for_completed()
 
     async def turn_left(self, d=90):
-        await self.turn_in_place(degrees(d)).await_for_completed()
+        await self.turn_in_place(degrees(d)).wait_for_completed()
 
     async def turn_right(self, d=90):
         await self.turn_in_place(degrees(-1 * d)).wait_for_completed()
