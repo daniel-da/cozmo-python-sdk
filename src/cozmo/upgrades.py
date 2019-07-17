@@ -77,37 +77,20 @@ class RobotUpgrades(object):
                     origin_id=self.pose.origin_id
                     )
 
-    def drive_forward(self, distance=default_distance, speed=default_speed):
-        loop = asyncio.get_event_loop()
-        loop.run_until_complete(
-            self.drive_straight(distance_mm(distance),
-                                speed_mmps(speed))
-        )
+    async def drive_forward(self, distance=default_distance, speed=default_speed):
+        await self.drive_straight(distance_mm(distance), speed_mmps(speed)).wait_for_completed()
 
-    def drive_backards(self, distance=default_distance, speed=default_speed):
-        loop = asyncio.get_event_loop()
-        loop.run_until_complete(
-            self.drive_straight(distance_mm(distance * -1),
-                                speed_mmps(speed))
-        )
+    async def drive_backards(self, distance=default_distance, speed=default_speed):
+        await self.drive_straight(distance_mm(distance * -1), speed_mmps(speed)).wait_for_completed()
 
-    def turn_left(self, d=90):
-        loop = asyncio.get_event_loop()
-        loop.run_until_complete(
-            self.turn_in_place(degrees(d))
-        )
+    async def turn_left(self, d=90):
+        await self.turn_in_place(degrees(d)).await_for_completed()
 
-    def turn_right(self, d=90):
-        loop = asyncio.get_event_loop()
-        loop.run_until_complete(
-            self.turn_in_place(degrees(-1 * d))
-        )
+    async def turn_right(self, d=90):
+        await self.turn_in_place(degrees(-1 * d)).wait_for_completed()
 
-    def turn_around(self):
-        loop = asyncio.get_event_loop()
-        loop.run_until_complete(
-            self.turn_in_place(degrees(180))
-        )
+    async def turn_around(self):
+        await self.turn_in_place(degrees(180)).wait_for_completed()
 
     @property
     def knows_charger_location(self):
