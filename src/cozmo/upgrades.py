@@ -30,6 +30,49 @@ class RobotUpgrades(object):
     default_distance = 300
     default_speed = 100
     objects_found = []
+    charging_pose = None
+    charging_charger_pose = None
+    docking_pose = None
+    docking_charger_pose = None
+    possible_docking_pose = None
+
+    async def undock(self):
+        await self.backup_onto_charger()
+        if not self.is_charging:
+            return
+        self.record_charging_position()
+        await self.drive_off_charger_contacts().wait_for_completed()
+        await self.drive_forward(90)
+        await self.turn_around()
+        found_charger = await self.look_around_for_charger()
+        if found_charger:
+            self.record_docking_positions()
+        await self.turn_around()
+
+    def record_charging_position(self):
+        self.charging_charger_pose = self.world.charger.pose
+        self.charging_pose = self.pose
+
+    def record_docking_positions(self):
+        self.docking_pose = self.pose
+        self.docking_charger_pose = self.world.charger.pose
+
+    async def look_around_for_charger(self, search_angle = 30):
+        total_turn = 0
+        found = False
+        while total_turn < 360 + search_angle:
+            if self.world.charger.is_visible:
+                found = True
+                break
+            await self.turn_right(search_angle)
+            total_turn += search_angle
+        await self.turn_left(total_turn)
+        return found
+
+    def calculate_possible_docking_pose(self):
+        charger_pose_delta = self.docking_charger_pose - self.world.charger.pose
+        self.possible_docking_pose = self.docking_pose + charger_pose_delta
+
 
     def obtain_coordinates_from_walls(self):
         """Should reset the robot pose coordinates based on he location of known walls.
@@ -135,6 +178,7 @@ class RobotUpgrades(object):
     def find_charger(self):
         """Find the charger by looking around. """
         pass
+
 
     @staticmethod
     def translate_pose_perpendicular(

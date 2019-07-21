@@ -448,10 +448,18 @@ class Pose:
         ''':class:`cozmo.util.Position`: The position component of this pose.'''
         return self._position
 
+    @position.setter
+    def position(self, new_position):
+        self._position = new_position
+
     @property
     def rotation(self):
         ''':class:`cozmo.util.Rotation`: The rotation component of this pose.'''
         return self._rotation
+
+    @rotation.setter
+    def rotation(self, new_rotation):
+        self._rotation = new_rotation
 
     def to_matrix(self):
         """Convert the Pose to a Matrix44.
