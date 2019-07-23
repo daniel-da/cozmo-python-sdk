@@ -44,10 +44,9 @@ class RobotUpgrades(object):
         await self.drive_off_charger_contacts().wait_for_completed()
         await self.drive_forward(90)
         await self.turn_around()
-        found_charger = await self.look_around_for_charger()
-        if found_charger:
+        if self.world.charger.is_visible:
+            await self.turn_around()
             self.record_docking_positions()
-        await self.turn_around()
 
     def record_charging_position(self):
         self.charging_charger_pose = self.world.charger.pose
@@ -57,7 +56,9 @@ class RobotUpgrades(object):
         self.docking_pose = self.pose
         self.docking_charger_pose = self.world.charger.pose
 
-    async def look_around_for_charger(self, search_angle = 30):
+    async def look_around_for_charger(self, search_angle=30):
+        if search_angle is 0:
+            return
         total_turn = 0
         found = False
         while total_turn < 360 + search_angle:
@@ -71,8 +72,7 @@ class RobotUpgrades(object):
 
     def calculate_possible_docking_pose(self):
         charger_pose_delta = self.docking_charger_pose - self.world.charger.pose
-        self.possible_docking_pose = self.docking_pose + charger_pose_delta
-
+        self.possible_docking_pose = self.docking_pose - charger_pose_delta
 
     def obtain_coordinates_from_walls(self):
         """Should reset the robot pose coordinates based on he location of known walls.
