@@ -151,29 +151,18 @@ class RobotUpgrades(object):
         z = obj.pose.position.z
         return math.sqrt((x-ix)**2 + (y-iy)**2 + (z-iz)**2)
 
-    def return_to_charger(self, final_distance=None, look_timeout=30):
-        if self.is_on_charger:
-            return
-        charger = None
-        if not final_distance:
-            final_distance = util.distance_mm(50)
-        if self.knows_charger_location:
-            charger = self.world.charger
-            pass
-        else:
-            look_around = self.start_behavior(
-                behavior.BehaviorTypes.LookAroundInPlace)
-            try:
-                charger = self.world.wait_for_observed_charger(
-                    timeout=look_timeout)
-            except asyncio.TimeoutError:
-                pass
-            finally:
-                look_around.stop()
+    async def return_to_charger(self, final_distance=None, look_timeout=30):
+        if not self.knows_charger_location:
+            await self.look_around_for_charger(45)
+            if not self.knows_charger_location:
+                return
+                #should probably say "cant find charger"
+        await self.go_to_object(self.world.charger, distance_mm(100)).wait_for_completed()
+        await self.look_around_for_charger(30)
+        self.calculate_possible_docking_pose()
+        self.go_to_pose(self.possible_docking_pose).wait_for_completed()
+        await self.backup_onto_charger(10)
 
-        if charger:
-            goto_action = self.go_to_object(charger, final_distance)
-            goto_action.wait_for_completed()
 
     def find_charger(self):
         """Find the charger by looking around. """
@@ -202,45 +191,37 @@ class RobotUpgrades(object):
         self.turn_in_place(degrees(180))
         self.backup_onto_charger()
 
-    def define_rectangle(self):
-        loop = asyncio.get_event_loop()
-        self.walls['east'] = loop.run_until_complete(
-            self.world.define_custom_wall(
-                CustomObjectTypes.CustomType02,
-                CustomObjectMarkers.Triangles2,
-                710, 50, 50, 50,
-                True).wait_until_completed()
-        )
+    async def define_rectangle(self):
 
-        self.walls['west'] = loop.run_until_complete(
-            self.world.define_custom_wall(
-                CustomObjectTypes.CustomType01,
-                CustomObjectMarkers.Circles2,
-                710, 50, 50, 50,
-                True)
-        )
+        self.walls['north'] = await self.world.define_custom_wall(
+            CustomObjectTypes.CustomType02,
+            CustomObjectMarkers.Triangles2,
+            710, 50,
+            25, 25,
+            True)
 
-        self.walls['north'] = loop.run_until_complete(
-            self.world.define_custom_wall(
-                CustomObjectTypes.CustomType03,
-                CustomObjectMarkers.Diamonds2,
-                1330, 50, 50, 50,
-                True)
-        )
+        self.walls['west'] = await self.world.define_custom_wall(
+            CustomObjectTypes.CustomType01,
+            CustomObjectMarkers.Circles2,
+            710, 50,
+            25, 25,
+            True)
 
-        self.walls['south'] = loop.run_until_complete(
-            self.world.define_custom_wall(
-                CustomObjectTypes.CustomType04,
-                CustomObjectMarkers.Hexagons2,
-                1330, 50, 50, 50, True)
-        )
+        self.walls['north'] = await self.world.define_custom_wall(
+            CustomObjectTypes.CustomType03,
+            CustomObjectMarkers.Diamonds2,
+            1330, 50,
+            25, 25,
+            True)
 
-        self.walls['south'] = loop.run_until_complete(
-            self.world.define_custom_wall(
-                CustomObjectTypes.CustomType04,
-                CustomObjectMarkers.Hexagons2,
-                1330, 50, 50, 50, True)
-        )
+        self.walls['south'] = await self.world.define_custom_wall(
+            CustomObjectTypes.CustomType04,
+            CustomObjectMarkers.Hexagons2,
+            1330, 50,
+            25, 25,
+            True)
+
+
 
     @staticmethod
     def stop(self):
@@ -258,3 +239,5 @@ class RobotUpgrades(object):
     def enter_world(self, d, s):
         self.drive_off_charger_contacts().wait_for_completed()
         self.drive_straight(distance_mm(d), speed_mmps(s)).wait_for_completed()
+
+
