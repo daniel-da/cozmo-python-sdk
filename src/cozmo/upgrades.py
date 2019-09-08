@@ -151,6 +151,48 @@ class RobotUpgrades(object):
         z = obj.pose.position.z
         return math.sqrt((x-ix)**2 + (y-iy)**2 + (z-iz)**2)
 
+    def get_aligned_x_y(self, obj, hy):
+        theta = obj.pose.rotation.angle_z.radians
+        x_obj = obj.pose.position.x
+        y_obj = obj.pose.position.y
+        x_new = math.cos(theta + math.pi) * hy
+        y_new = math.sin(theta + math.pi) * hy
+        return x_new + x_obj, y_new + y_obj
+
+    async def face_x_direction(self, anglepersecond=None):
+        if anglepersecond is None:
+            anglepersecond = degrees(45)
+        print(anglepersecond)
+        await self.turn_to_angle(degrees(00), anglepersecond=anglepersecond)
+
+    async def face_y_direction(self, anglepersecond=None):
+        if anglepersecond is None:
+            anglepersecond = degrees(45)
+        print(anglepersecond)
+        await self.turn_to_angle(degrees(90), anglepersecond=anglepersecond)
+
+    async def turn_to_angle(self, angle, anglepersecond=None):
+        if anglepersecond is None:
+            anglepersecond = degrees(45)
+        print(anglepersecond)
+        await self.turn_in_place(angle - self.pose.rotation.angle_z,
+                                 speed=anglepersecond).wait_for_completed()
+
+    async def move_to_new_x_y(self, x, y):
+        x_c = self.pose.position.x
+        dx = x - x_c
+        await self.face_x_direction()
+        await self.drive_forward(dx)
+        y_c = self.pose.position.y
+        dy = y - y_c
+        await self.face_y_direction()
+        await self.drive_forward(dy)
+
+    async def align_with_object(self, obj, distance):
+        _x, _y = self.get_aligned_x_y(obj, distance)
+        await self.move_to_new_x_y(_x, _y)
+        await self.turn_to_angle(obj.pose.rotation.angle_z)
+
     async def return_to_charger(self, final_distance=None, look_timeout=30):
         if not self.knows_charger_location:
             await self.look_around_for_charger(45)
